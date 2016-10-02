@@ -18,23 +18,24 @@ android {
         }
     }
 
+    //Exclude potentially duplicated files.
     packagingOptions {
-        exclude 'META-INF/NOTICE' // will not include NOTICE file
-        exclude 'META-INF/LICENSE' // will not include LICENSE file
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
         exclude 'META-INF/notice'
         exclude 'META-INF/notice.txt'
         exclude 'META-INF/license'
         exclude 'META-INF/license.txt'
+        exclude 'META-INF/DEPENDENCIES'
     }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
     compile 'com.facebook.android:facebook-android-sdk:4.16.0'
-    compile (group: 'com.soundcloud', name: 'java-api-wrapper', version: '1.3.1') {
-        exclude group: 'org.apache.httpcomponents'
-    }
+    compile 'com.google.code.gson:gson:2.7'
+    compile 'com.soundcloud:java-api-wrapper:1.3.1'
 }

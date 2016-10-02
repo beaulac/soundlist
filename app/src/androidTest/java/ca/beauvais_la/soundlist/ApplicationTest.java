@@ -1,4 +1,4 @@
-package beauvais_la.ca.soundbook;
+package ca.beauvais_la.soundlist;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

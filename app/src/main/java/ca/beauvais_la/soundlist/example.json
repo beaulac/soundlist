@@ -1,0 +1,45 @@
+{
+  "music": {
+    "data": [
+      {
+        "created_time": "2014-06-09T03:40:01+0000",
+        "id": "223771271049643",
+        "name": "Auxiliary"
+      },
+      {
+        "created_time": "2013-07-03T15:48:22+0000",
+        "id": "120021108095259",
+        "name": "Borealis"
+      },
+      {
+        "created_time": "2013-04-21T18:05:36+0000",
+        "id": "143563799023428",
+        "name": "Parton Kooper Planetarium"
+      },
+      {
+        "created_time": "2013-04-19T20:45:21+0000",
+        "id": "121007834602679",
+        "name": "Giriu Dvasios"
+      },
+      {
+        "created_time": "2010-07-28T02:59:36+0000",
+        "id": "6168813926",
+        "name": "Boards Of Canada"
+      },
+      {
+        "created_time": "2009-12-10T06:10:08+0000",
+        "id": "6026674951",
+        "name": "Aphex Twin"
+      }
+    ],
+    "paging": {
+      "cursors": {
+        "after": "NjAyNjY3NDk1MQZDZD",
+        "before": "MjIzNzcxMjcxMDQ5NjQz"
+      }
+    }
+  },
+  "id": "10153876065257267",
+  "name": "Antoine Beau-Lac"
+}, error: null
+}
