@@ -2,15 +2,10 @@ package ca.beauvais_la.soundlist.model;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.io.Serializable;
-
 /**
  * @author alacasse (10/1/16)
  */
-public class FBUser implements Serializable {
-
-    @SerializedName("id")
-    public String facebookID;
+public class FBUser {
 
     @SerializedName("name")
     public String name;

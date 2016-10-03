@@ -1,66 +1,60 @@
 package ca.beauvais_la.soundlist;
 
 import android.app.ListActivity;
-import android.app.LoaderManager;
+import android.app.LoaderManager.LoaderCallbacks;
 import android.content.Loader;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AbsListView.LayoutParams;
-import android.widget.ListView;
-import android.widget.ProgressBar;
+import ca.beauvais_la.soundlist.loader.EndlessScrollListener;
+import ca.beauvais_la.soundlist.loader.SoundcloudPlaylistLoader;
 import ca.beauvais_la.soundlist.model.FBMusicLikes;
+import ca.beauvais_la.soundlist.model.JsonUtil;
 import ca.beauvais_la.soundlist.model.SoundcloudPlaylist;
-import ca.beauvais_la.soundlist.model.FBUser;
 
 import java.util.List;
+
+import static ca.beauvais_la.soundlist.Soundlist.TAG;
+import static ca.beauvais_la.soundlist.loader.AsyncTaskLoaderEx.getNewUniqueLoaderId;
 
 
 /**
  * @author alacasse (10/1/16)
  */
-public class SoundcloudPlaylistActivity extends ListActivity implements LoaderManager.LoaderCallbacks<List<SoundcloudPlaylist>> {
+public class SoundcloudPlaylistActivity extends ListActivity implements LoaderCallbacks<List<SoundcloudPlaylist>> {
 
     private SoundcloudPlaylistAdapter mSoundcloudPlaylistAdapter;
-    private ProgressBar progressBar;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setupProgressBar();
+        final Bundle extraParams = getIntent().getExtras();
+        final Loader<List<SoundcloudPlaylist>> listLoader = getLoaderManager().initLoader(getNewUniqueLoaderId(), extraParams, this);
+
+        getListView().setOnScrollListener(buildListenerForLoader(listLoader));
 
         mSoundcloudPlaylistAdapter = new SoundcloudPlaylistAdapter(this);
         setListAdapter(mSoundcloudPlaylistAdapter);
 
-        final ListView lv = getListView();
-        lv.setTextFilterEnabled(true);
-
-        getLoaderManager().initLoader(0, getIntent().getExtras(), this);
     }
 
-
-    private void setupProgressBar() {
-        // Create a progress bar to display while the list loads
-        progressBar = new ProgressBar(this);
-        progressBar.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,
-                                                     LayoutParams.WRAP_CONTENT, Gravity.CENTER));
-
-        progressBar.setIndeterminate(false);
-        getListView().setEmptyView(progressBar);
-
-        // Must add the progress bar to the root of the layout
-        ViewGroup root = (ViewGroup) this.findViewById(android.R.id.content);
-        root.addView(progressBar);
+    private EndlessScrollListener buildListenerForLoader(final Loader<List<SoundcloudPlaylist>> listLoader) {
+        return new EndlessScrollListener() {
+            @Override
+            public boolean onLoadMore(int page, int totalItemsCount) {
+                final boolean started = listLoader.isStarted();
+                if (started) {
+                    listLoader.onContentChanged();
+                }
+                return started;
+            }
+        };
     }
+
 
     @Override
     public Loader<List<SoundcloudPlaylist>> onCreateLoader(int id, Bundle args) {
-
-        String musicLikesJson = args.getString("musicLikes");
-
+        String musicLikesJson = args.getString(FBMusicLikes.DATA_KEY);
         FBMusicLikes musicLikes = JsonUtil.deserializeAs(musicLikesJson, FBMusicLikes.class);
 
         return new SoundcloudPlaylistLoader(this, musicLikes);
@@ -69,20 +63,13 @@ public class SoundcloudPlaylistActivity extends ListActivity implements LoaderMa
     @Override
     public void onLoadFinished(Loader<List<SoundcloudPlaylist>> loader,
                                List<SoundcloudPlaylist> soundcloudPlaylists) {
-        Log.i("soundlist", String.format("updated adapter with %d playlists", soundcloudPlaylists.size()));
+        Log.d(TAG, String.format("Added %d more playlists to adapter", soundcloudPlaylists.size()));
         mSoundcloudPlaylistAdapter.addAll(soundcloudPlaylists);
-
-        progressBar.setVisibility(View.GONE);
-
-        if (loader.isStarted()) {
-            loader.onContentChanged();
-        }
     }
 
     @Override
     public void onLoaderReset(Loader<List<SoundcloudPlaylist>> loader) {
-        mSoundcloudPlaylistAdapter.setData(null);
+        mSoundcloudPlaylistAdapter.clear();
     }
-
 
 }

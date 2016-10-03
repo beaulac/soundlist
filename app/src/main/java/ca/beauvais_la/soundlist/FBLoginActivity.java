@@ -7,9 +7,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
+import ca.beauvais_la.soundlist.model.FBMusicLikes;
 import ca.beauvais_la.soundlist.model.FBUser;
-import com.facebook.AccessToken;
+import ca.beauvais_la.soundlist.model.JsonUtil;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -19,19 +19,17 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
 /**
  * @author alacasse (10/1/16)
  */
-public class LoginActivity extends Activity {
+public class FBLoginActivity extends Activity {
 
     private CallbackManager callbackManager;
     private LoginButton loginButton;
     private TextView btnLogin;
     private ProgressDialog progressDialog;
 
-    FBUser currentUser;
+    private FBUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,11 +37,6 @@ public class LoginActivity extends Activity {
 
         setContentView(R.layout.activity_login);
 
-        currentUser = PrefUtils.getCurrentUser(this);
-//        currentUser = null;
-        if (currentUser != null) {
-            goToSoundcloudPlaylistActivity();
-        }
     }
 
     @Override
@@ -61,7 +54,7 @@ public class LoginActivity extends Activity {
             @Override
             public void onClick(View v) {
 
-                progressDialog = new ProgressDialog(LoginActivity.this);
+                progressDialog = new ProgressDialog(FBLoginActivity.this);
                 progressDialog.setMessage("Loading...");
                 progressDialog.show();
 
@@ -86,16 +79,15 @@ public class LoginActivity extends Activity {
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void goToSoundcloudPlaylistActivity() {
-        Intent intent = new Intent(LoginActivity.this, SoundcloudPlaylistActivity.class);
+    private void goToSoundcloudPlaylistActivityAsUser(FBUser user) {
+        final Bundle params = new Bundle();
+        params.putString(FBMusicLikes.DATA_KEY, JsonUtil.serialize(user.musicLikes));
 
-        Bundle extras = new Bundle();
-        FBUser currentUser = PrefUtils.getCurrentUser(this);
+        final Intent intent = new Intent(FBLoginActivity.this, SoundcloudPlaylistActivity.class);
+        intent.putExtras(params);
 
-        extras.putSerializable("musicLikes", JsonUtil.serialize(currentUser.musicLikes));
-
-        intent.putExtras(extras);
         startActivity(intent);
+
         finish();
     }
 
@@ -111,18 +103,14 @@ public class LoginActivity extends Activity {
                         public void onCompleted(
                                 JSONObject object,
                                 GraphResponse response) {
+                            Log.d(Soundlist.TAG, response.getRawResponse());
 
-                            Log.e(Soundlist.TAG, response + "");
                             try {
                                 currentUser = JsonUtil.deserializeAs(response.getRawResponse(), FBUser.class);
-
-                                PrefUtils.setCurrentUser(currentUser, LoginActivity.this);
-
+                                goToSoundcloudPlaylistActivityAsUser(currentUser);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-
-                            goToSoundcloudPlaylistActivity();
                         }
 
                     });

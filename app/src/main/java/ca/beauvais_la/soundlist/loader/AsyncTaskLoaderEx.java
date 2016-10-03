@@ -1,12 +1,14 @@
 package ca.beauvais_la.soundlist.loader;
 
-import android.content.Context;
 import android.content.AsyncTaskLoader;
+import android.content.Context;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 public abstract class AsyncTaskLoaderEx<T> extends AsyncTaskLoader<T> {
+
     private static final AtomicInteger sCurrentUniqueId = new AtomicInteger(0);
+
     private T mData;
     public boolean hasResult = false;
 
@@ -46,7 +48,8 @@ public abstract class AsyncTaskLoaderEx<T> extends AsyncTaskLoader<T> {
         }
     }
 
-    @Override protected void onStopLoading() {
+    @Override
+    protected void onStopLoading() {
         cancelLoad();
     }
 

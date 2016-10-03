@@ -11,7 +11,6 @@ public class FBPaging {
     @SerializedName("next")
     private String nextUrl;
 
-
     public String getNextUrl() {
         return nextUrl;
     }

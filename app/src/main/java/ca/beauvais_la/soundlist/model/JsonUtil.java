@@ -1,4 +1,4 @@
-package ca.beauvais_la.soundlist;
+package ca.beauvais_la.soundlist.model;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -17,10 +17,6 @@ public class JsonUtil {
 
     public static String serialize(Object o) {
         return GSON.toJson(o);
-    }
-
-    public static <T> T deserializeAs(String json, TypeToken<T> typeToken) {
-        return GSON.fromJson(json, typeToken.getType());
     }
 
     public static <T> T deserializeAs(String json, Class<T> type) {
