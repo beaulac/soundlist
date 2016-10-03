@@ -15,6 +15,9 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            applicationVariants.all { variant ->
+                renameAPK(variant, defaultConfig, 'R')
+            }
         }
     }
 
@@ -27,6 +30,16 @@ android {
         exclude 'META-INF/license'
         exclude 'META-INF/license.txt'
         exclude 'META-INF/DEPENDENCIES'
+    }
+}
+
+def renameAPK(variant, defaultConfig, buildType) {
+    variant.outputs.each { output ->
+        def formattedDate = new Date().format('yyMMdd')
+
+        def file = output.packageApplication.outputFile
+        def fileName = applicationName + "_V" + defaultConfig.versionCode + "_" + formattedDate + "_" + buildType + ".apk"
+        output.packageApplication.outputFile = new File(file.parent, fileName)
     }
 }
 
